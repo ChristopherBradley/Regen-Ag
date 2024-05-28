@@ -14,7 +14,7 @@ target_bbox: [148.417472, -34.47002, 148.539167, -34.354502] # milgdarra 2x2
 
 # Resolution of data download in arcseconds
 target_res: 1.0
-date_min: 2020-01-01
+date_min: 2024-01-01
 date_max: 2024-04-24
 time_intervals: 1
 time_buffer: 0
@@ -37,43 +37,43 @@ target_sources:
     # Depth_of_Regolith: [0-5cm, 5-15cm, 15-30cm, 30-60cm, 60-100cm, 100-200cm]
     # Depth_of_Soil: [0-5cm, 5-15cm, 15-30cm, 30-60cm, 60-100cm, 100-200cm]
     
-  Landscape:
-    - Prescott_index
-    - net_radiation_jan
-    - net_radiation_july
-    - total_shortwave_sloping_surf_jan
-    - total_shortwave_sloping_surf_july
-    - Slope
-    - Aspect
-    - TPI_mask
-    - SRTM_TopographicPositionIndex
-    - Contributing_area
-    - MrVBF
-    - Plan_curvature
-    - Profile_curvature
+  # Landscape:
+    # - Prescott_index
+    # - net_radiation_jan
+    # - net_radiation_july
+    # - total_shortwave_sloping_surf_jan
+    # - total_shortwave_sloping_surf_july
+    # - Slope
+    # - Aspect
+    # - TPI_mask
+    # - SRTM_TopographicPositionIndex
+    # - Contributing_area
+    # - MrVBF
+    # - Plan_curvature
+    # - Profile_curvature
 
     # Didn't work:
     # - Topographic_wetness_index
 
   
-  # SILO:
-    # daily_rain: median
-    # max_temp: median
-    # min_temp: median
-    # 'vp': median # (Vapour pressure, hPa)
-    # 'vp_deficit': median # (Vapour pressure deficit, hPa)
-    # 'evap_pan': median # (Class A pan evaporation, mm)
-    # 'evap_syn': median # (Synthetic estimate, mm)
-    # 'evap_morton_lake': median # (Morton's shallow lake evaporation, mm)
-    # 'radiation': median # (Solar radiation: Solar exposure, consisting of both direct and diffuse components, MJ/m2)
-    # 'rh_tmax': median # (Relative humidity: Relative humidity at the time of maximum temperature, %)
-    # 'rh_tmin': median # (Relative humidity at the time of minimum temperature, %)
-    # 'et_short_crop': median # (Evapotranspiration FAO564 short crop, mm)
-    # 'et_tall_crop': median # (ASCE5 tall crop6, mm)
-    # 'et_morton_actual': median # (Morton's areal actual evapotranspiration, mm)
-    # 'et_morton_potential': median # (Morton's point potential evapotranspiration, mm)
-    # 'et_morton_wet': median # (Morton's wet-environment areal potential evapotranspiration over land, mm)
-    # 'mslp': median # (Mean sea level pressure Mean sea level pressure, hPa)
+  SILO:
+    daily_rain: median
+    max_temp: median
+    min_temp: median
+    'vp': median # (Vapour pressure, hPa)
+    'vp_deficit': median # (Vapour pressure deficit, hPa)
+    'evap_pan': median # (Class A pan evaporation, mm)
+    'evap_syn': median # (Synthetic estimate, mm)
+    'evap_morton_lake': median # (Morton's shallow lake evaporation, mm)
+    'radiation': median # (Solar radiation: Solar exposure, consisting of both direct and diffuse components, MJ/m2)
+    'rh_tmax': median # (Relative humidity: Relative humidity at the time of maximum temperature, %)
+    'rh_tmin': median # (Relative humidity at the time of minimum temperature, %)
+    'et_short_crop': median # (Evapotranspiration FAO564 short crop, mm)
+    'et_tall_crop': median # (ASCE5 tall crop6, mm)
+    'et_morton_actual': median # (Morton's areal actual evapotranspiration, mm)
+    'et_morton_potential': median # (Morton's point potential evapotranspiration, mm)
+    'et_morton_wet': median # (Morton's wet-environment areal potential evapotranspiration over land, mm)
+    'mslp': median # (Mean sea level pressure Mean sea level pressure, hPa)
 
     # Didn't work
     # 'evap_comb': median # (Combination: synthetic estimate pre-1970, class A pan 1970 onwards, mm)
