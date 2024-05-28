@@ -21,13 +21,13 @@ time_buffer: 0
 
 target_sources:
   DEM: [DEM]
-  SLGA:
-    Bulk_Density: [0-5cm, 5-15cm, 15-30cm, 30-60cm, 60-100cm, 100-200cm]
-    Clay: [0-5cm, 5-15cm, 15-30cm, 30-60cm, 60-100cm, 100-200cm]
-    Sand: [0-5cm, 5-15cm, 15-30cm, 30-60cm, 60-100cm, 100-200cm]
-    Silt: [0-5cm, 5-15cm, 15-30cm, 30-60cm, 60-100cm, 100-200cm]
-    Available_Water_Capacity: [0-5cm, 5-15cm, 15-30cm, 30-60cm, 60-100cm, 100-200cm]
-    Effective_Cation_Exchange_Capacity: [0-5cm, 5-15cm, 15-30cm, 30-60cm, 60-100cm, 100-200cm]
+  # SLGA:
+  #   Bulk_Density: [0-5cm, 5-15cm, 15-30cm, 30-60cm, 60-100cm, 100-200cm]
+  #   Clay: [0-5cm, 5-15cm, 15-30cm, 30-60cm, 60-100cm, 100-200cm]
+  #   Sand: [0-5cm, 5-15cm, 15-30cm, 30-60cm, 60-100cm, 100-200cm]
+  #   Silt: [0-5cm, 5-15cm, 15-30cm, 30-60cm, 60-100cm, 100-200cm]
+  #   Available_Water_Capacity: [0-5cm, 5-15cm, 15-30cm, 30-60cm, 60-100cm, 100-200cm]
+  #   Effective_Cation_Exchange_Capacity: [0-5cm, 5-15cm, 15-30cm, 30-60cm, 60-100cm, 100-200cm]
 
     # Didn't work
     # Total_Nitrogen: [0-5cm]
@@ -36,25 +36,25 @@ target_sources:
     # pHCaCl2: [0-5cm]
     # Depth_of_Regolith: [0-5cm, 5-15cm, 15-30cm, 30-60cm, 60-100cm, 100-200cm]
     # Depth_of_Soil: [0-5cm, 5-15cm, 15-30cm, 30-60cm, 60-100cm, 100-200cm]
-
-
     
-  # Landscape:
-  #   - Prescott_index
-  #   - net_radiation_jan
-  #   - net_radiation_july
-  #   - total_shortwave_sloping_surf_jan
-  #   - total_shortwave_sloping_surf_july
-  #   - Slope
-  #   - Slope_relief_class
-  #   - Aspect
-  #   - Topographic_wetness_index
-  #   - TPI_mask
-  #   - SRTM_TopographicPositionIndex
-  #   - Contributing_area
-  #   - MrVBF
-  #   - Plan_curvature
-  #   - Profile_curvature
+  Landscape:
+    - Prescott_index
+    - net_radiation_jan
+    - net_radiation_july
+    - total_shortwave_sloping_surf_jan
+    - total_shortwave_sloping_surf_july
+    - Slope
+    - Aspect
+    - TPI_mask
+    - SRTM_TopographicPositionIndex
+    - Contributing_area
+    - MrVBF
+    - Plan_curvature
+    - Profile_curvature
+
+    # Didn't work:
+    # - Topographic_wetness_index
+
   
   # SILO:
     # daily_rain: median
