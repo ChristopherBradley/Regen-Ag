@@ -1,7 +1,8 @@
 # Example Settings Configuration yaml for the Geodata Harvester
 
 # Output path relative to code execution location
-infile: zero_coords.csv
+# infile: zero_coords.csv
+infile: minimal_site_milgdarra_centre.csv
 outpath: data
 colname_lat: Lat
 colname_lng: Long
@@ -19,21 +20,25 @@ time_intervals: 1
 time_buffer: 0
 
 target_sources:
-  DEM:
-    - DEM
-  # SLGA:
-  #   - Bulk_Density
-  #   - Organic_Carbon
-  #   - Clay
-  #   - Silt
-  #   - Sand
-  #   - pHCaCl2
-  #   - Available_Water_Capacity
-  #   - Total_Nitrogen
-  #   - Total_Phosphorus
-  #   - Effective_Cation_Exchange_Capacity
-  #   - Depth_of_Regolith
-  #   - Depth_of_Soil
+  DEM: [DEM]
+  SLGA:
+    Bulk_Density: [0-5cm, 5-15cm, 15-30cm, 30-60cm, 60-100cm, 100-200cm]
+    Clay: [0-5cm, 5-15cm, 15-30cm, 30-60cm, 60-100cm, 100-200cm]
+    Sand: [0-5cm, 5-15cm, 15-30cm, 30-60cm, 60-100cm, 100-200cm]
+    Silt: [0-5cm, 5-15cm, 15-30cm, 30-60cm, 60-100cm, 100-200cm]
+    Available_Water_Capacity: [0-5cm, 5-15cm, 15-30cm, 30-60cm, 60-100cm, 100-200cm]
+    Effective_Cation_Exchange_Capacity: [0-5cm, 5-15cm, 15-30cm, 30-60cm, 60-100cm, 100-200cm]
+
+    # Didn't work
+    # Total_Nitrogen: [0-5cm]
+    # Organic_Carbon: [0-5cm, 5-15cm, 15-30cm, 30-60cm, 60-100cm, 100-200cm]
+    # Total_Phosphorus: [0-5cm, 5-15cm, 15-30cm, 30-60cm, 60-100cm, 100-200cm]
+    # pHCaCl2: [0-5cm]
+    # Depth_of_Regolith: [0-5cm, 5-15cm, 15-30cm, 30-60cm, 60-100cm, 100-200cm]
+    # Depth_of_Soil: [0-5cm, 5-15cm, 15-30cm, 30-60cm, 60-100cm, 100-200cm]
+
+
+    
   # Landscape:
   #   - Prescott_index
   #   - net_radiation_jan
@@ -50,6 +55,7 @@ target_sources:
   #   - MrVBF
   #   - Plan_curvature
   #   - Profile_curvature
+  
   # SILO:
     # daily_rain: median
     # max_temp: median
@@ -58,7 +64,6 @@ target_sources:
     # 'vp_deficit': median # (Vapour pressure deficit, hPa)
     # 'evap_pan': median # (Class A pan evaporation, mm)
     # 'evap_syn': median # (Synthetic estimate, mm)
-    # # 'evap_comb': median # (Combination: synthetic estimate pre-1970, class A pan 1970 onwards, mm)
     # 'evap_morton_lake': median # (Morton's shallow lake evaporation, mm)
     # 'radiation': median # (Solar radiation: Solar exposure, consisting of both direct and diffuse components, MJ/m2)
     # 'rh_tmax': median # (Relative humidity: Relative humidity at the time of maximum temperature, %)
@@ -69,3 +74,6 @@ target_sources:
     # 'et_morton_potential': median # (Morton's point potential evapotranspiration, mm)
     # 'et_morton_wet': median # (Morton's wet-environment areal potential evapotranspiration over land, mm)
     # 'mslp': median # (Mean sea level pressure Mean sea level pressure, hPa)
+
+    # Didn't work
+    # 'evap_comb': median # (Combination: synthetic estimate pre-1970, class A pan 1970 onwards, mm)
