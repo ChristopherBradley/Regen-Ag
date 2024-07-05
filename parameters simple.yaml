@@ -1,0 +1,20 @@
+# Example Settings Configuration yaml for the Geodata Harvester
+
+# Output path relative to code execution location
+infile: zero_coords.csv   # This works for DEM, but not soils or climate
+outpath: data
+colname_lat: Lat
+colname_lng: Long
+
+# Bounding box (Lon-Lat): Left, Top, Right, Bottom
+target_bbox: [148.95860199999998, -35.337818, 149.058602, -35.237818000000004]  # Spring Valley
+
+# Resolution of data download in arcseconds
+target_res: 1.0
+date_min: 2024-01-01
+date_max: 2024-04-24
+time_intervals: 1
+time_buffer: 0
+
+target_sources:
+  DEM: [DEM]

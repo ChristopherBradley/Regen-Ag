@@ -1,0 +1,1 @@
+gdalwarp -of "GTiff" -s_srs EPSG:4326 -t_srs EPSG:3857 -te 149.048498 -35.324602999999996 149.14849800000002 -35.224603 mapzen_wms.xml test.tif

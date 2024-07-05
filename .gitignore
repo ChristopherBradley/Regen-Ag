@@ -1,3 +1,7 @@
 data
 .DS_Store
 .ipynb_checkpoints/
+*.nc
+*.csv
+harvest.txt
+*.tif
