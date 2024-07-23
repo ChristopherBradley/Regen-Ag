@@ -7,3 +7,11 @@ harvest.txt
 *.tif
 *.geojson
 gdalwmscache
+*.gpkg
+*.txt
+*.shx
+*.shp
+*.qpj
+*.prj
+*.dbf
+*.cpg
