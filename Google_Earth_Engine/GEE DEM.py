@@ -1,46 +1,40 @@
 import ee
-import time
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-from scipy import optimize
-import numpy as np
-import matplotlib.pyplot as plt
+import os
 import rasterio
-from IPython.display import Image
-from rasterio.transform import from_origin
+import matplotlib.pyplot as plt
 import requests
 import zipfile
-import os
+from IPython.display import Image
 
 ee.Authenticate()
 ee.Initialize()
 
-# Can conveniently generately these coordinates using geojson.io
-roi = ee.Geometry.Polygon([
-          [
+spring_valley = [
             [
-              149.08449525031176,
-              -35.2570704477603
+              149.00336491999764,
+              -35.27196845308364
             ],
             [
-              149.08449525031176,
-              -35.28584003593624
+              149.00336491999764,
+              -35.29889331119306
             ],
             [
-              149.1124336866019,
-              -35.28584003593624
+              149.02249143582833,
+              -35.29889331119306
             ],
             [
-              149.1124336866019,
-              -35.2570704477603
+              149.02249143582833,
+              -35.27196845308364
             ],
             [
-              149.08449525031176,
-              -35.2570704477603
+              149.00336491999764,
+              -35.27196845308364
             ]
           ]
-])
+
+# Can conveniently generately these coordinates using geojson.io
+roi = ee.Geometry.Polygon([spring_valley])
+
 # From the DEM-H Data page, converted from javascript to python
 dataset = ee.Image('AU/GA/DEM_1SEC/v10/DEM-H');
 elevation = dataset.select('elevation');
@@ -53,7 +47,7 @@ asset_url = elevation.getDownloadURL({
     'crs': 'EPSG:4326',
     'fileFormat': 'GeoTIFF',
     'region': roi})
-print(link)
+print(asset_url)
 
 # +
 # Download the zip file
@@ -68,7 +62,7 @@ with zipfile.ZipFile(zip_path, 'r') as zip_ref:
     zip_ref.extractall('asset')
 
 # Read the TIFF file using rasterio
-tif_files = [f for f in os.listdir('dem_asset') if f.endswith('.tif')]
+tif_files = [f for f in os.listdir('asset') if f.endswith('.tif')]
 tif_path = os.path.join('asset', tif_files[0])
 with rasterio.open(tif_path) as src:
     dem_data = src.read(1)  # Read the first band into a NumPy array
@@ -81,9 +75,9 @@ plt.show()
 
 # Clean up
 os.remove(zip_path)
-for f in os.listdir('dem_asset'):
-    os.remove(os.path.join('dem_asset', f))
-os.rmdir('dem_asset')
+for f in os.listdir('asset'):
+    os.remove(os.path.join('asset', f))
+os.rmdir('asset')
 # -
 
 
