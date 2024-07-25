@@ -134,6 +134,25 @@ branches = grid.extract_river_network(fdir, acc > max_acc/100, dirmap=dirmap)
 end = datetime.now()
 print(end - start)
 
+network1 = -1
+max_len = -1
+max_len_index = -1
+branches_np = []
+for i, feature in enumerate(branches["features"]):
+    line_coords = feature['geometry']['coordinates']
+    branch_np = []
+    for coord in line_coords:
+        col, row = ~grid.affine * (coord[0], coord[1])
+        row, col = int(round(row)), int(round(col))
+        branch_np.append([row,col])
+    branches_np.append(branch_np)
+len(branches_np)
+
+coord1 = branches_np[0][0]
+coord2 = branches_np[0][-1]
+x1, y1 = grid.affine * (coord1[1], coord1[0])
+x2, y2 = grid.affine * (coord2[1], coord2[0])
+
 # +
 sns.set_palette('husl')
 fig, ax = plt.subplots(figsize=(8.5,6.5))
@@ -156,25 +175,66 @@ _ = plt.title('D8 channels', size=14)
 print(branches["features"][i]["geometry"]["coordinates"][0])
 print(branches["features"][i]["geometry"]["coordinates"][-1])
 
-network1 = -1
-max_len = -1
-max_len_index = -1
-branches_np = []
-for i, feature in enumerate(branches["features"]):
-    line_coords = feature['geometry']['coordinates']
-    branch_np = []
-    for coord in line_coords:
-        col, row = ~grid.affine * (coord[0], coord[1])
-        row, col = int(round(row)), int(round(col))
-        branch_np.append([row,col])
-    branches_np.append(branch_np)
+# +
+sns.set_palette('husl')
+fig, ax = plt.subplots(figsize=(8.5,6.5))
+
+for branch in branches_np:
+    line = np.asarray(branch)
+    plt.plot(line[:, 0], line[:, 1])
+
+plt.scatter(coord1[0], coord1[1], color='green', zorder=5)
+plt.scatter(coord2[0], coord2[1], color='red', zorder=5)
+
+
+_ = plt.title('D8 channels', size=14)
+
+
+# -
+
+def find_segment_above(coord, branches_np):
+    """Look for a segment upstream with the highest accumulation"""
+    segment_above = None
+    acc_above = -1
+    for i, branch in enumerate(branches_np):
+        if branch[-1] == coord:
+            branch_acc = acc[branch[-2][0], branch[-2][1]] 
+            if branch_acc > acc_above:
+                segment_above = i
+                acc_above = branch_acc
+    return segment_above
+
+
+# Finding the second highest accumulation of each branch. The highest often matches two branches that intersect.
+branch_accs = []
+for branch in branches_np:
+    bottom_coord = branch[-2]
+    branch_acc = acc[bottom_coord[0], bottom_coord[1]]
+    branch_accs.append(branch_acc)
+sorted_branch_ids = np.argsort(branch_accs)[::-1]
+
+# Follow the stream all the way up the branches
+largest_branch = sorted_branch_ids[0]
+branch_segment_ids = []
+while largest_branch != None:
+    upper_coord = branches_np[largest_branch][0]
+    branch_segment_ids.append(largest_branch)
+    largest_branch = find_segment_above(upper_coord, branches_np)
+branch_segment_ids
+
+branch_segments = [branches_np[i] for i in sorted(branch_segment_ids)]
+branch_combined = [item for sublist in branch_segments for item in sublist]
+
+# Sort indices in descending order to avoid index shifting issues during deletion
+branch_segments_sorted = sorted(branch_segment_ids, reverse=True)
+for i in branch_segments_sorted:
+    del branches_np[i]
+
 len(branches_np)
 
-coord1 = branches_np[0][0]
-coord2 = branches_np[0][-1]
+branches_np = branches_np[:-1]
 
-x1, y1 = grid.affine * (coord1[1], coord1[0])
-x2, y2 = grid.affine * (coord2[1], coord2[0])
+branches_np.append(branch_combined)
 
 # +
 sns.set_palette('husl')
@@ -190,9 +250,5 @@ plt.scatter(coord2[0], coord2[1], color='red', zorder=5)
 
 _ = plt.title('D8 channels', size=14)
 # -
-
-len(branches["features"])
-
-acc.shape
 
 

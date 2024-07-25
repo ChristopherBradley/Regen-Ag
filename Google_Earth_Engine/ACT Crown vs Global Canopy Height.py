@@ -8,11 +8,12 @@ from shapely.geometry import box
 from scipy.stats import gaussian_kde
 from datetime import datetime
 
-# Read the GeoPackage
 start = datetime.now()
+
+# Read the GeoPackage. John has stored this on ANU NCI at: /g/data/xe2/John/Data/ACTtrees
 gdf = gpd.read_file("ACTGOV_Mature_Trees_2020_sppID_singles.gpkg")
 
-# Open the Global Canopy Height TIFF file and get its bounding box
+# Open the Global Canopy Height TIFF file. I downloaded this with: aws s3 cp --no-sign-request s3://dataforgood-fb-data/forests/v1/alsgedi_global_v6_float/chm/311230213.tif .
 with rasterio.open("Canberra tiles/311230302.tif") as src:
     bbox = box(*src.bounds)
     canopy_height_data = src.read(1)  # Read the first band

@@ -37,7 +37,6 @@ while np.any(all_catchments == 0) and catchment_id <= 10:
     all_catchments[catch] = catchment_id
     acc_updated[catch] = 0
     catchment_id += 1
-
 plt.imshow(all_catchments)
 plt.show()
 
@@ -64,5 +63,7 @@ plt.title('Flow Accumulation', size=14)
 plt.xlabel('Longitude')
 plt.ylabel('Latitude')
 plt.tight_layout()
+
+
 
 
