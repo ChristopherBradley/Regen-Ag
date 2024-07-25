@@ -26,8 +26,6 @@ catchment_id = 1
 all_catchments = np.zeros(acc.shape, dtype=int)
 acc_updated = acc.copy()
 while np.any(all_catchments == 0) and catchment_id <= 10:
-    print(datetime, "delineating catchment", catchment_id)
-
     # Find the coordinate with maximum accumulation
     max_index = np.argmax(acc_updated)
     max_coords = np.unravel_index(max_index, acc_updated.shape)
@@ -42,3 +40,29 @@ while np.any(all_catchments == 0) and catchment_id <= 10:
 
 plt.imshow(all_catchments)
 plt.show()
+
+from scipy import ndimage
+sobel_x = ndimage.sobel(all_catchments, axis=0)  # horizontal gradient
+sobel_y = ndimage.sobel(all_catchments, axis=1)  # vertical gradient
+edges = np.hypot(sobel_x, sobel_y)    # magnitude of the gradient
+
+
+edges_bool = edges > 0
+
+plt.imshow(edges_bool)
+
+# Visualise the accumulation (so cool!)
+fig, ax = plt.subplots(figsize=(8,6))
+fig.patch.set_alpha(0)
+plt.grid('on', zorder=0)
+im = ax.imshow(edges, extent=grid.extent, zorder=2,
+               cmap='cubehelix',
+               norm=colors.LogNorm(1, acc.max()),
+               interpolation='bilinear')
+plt.colorbar(im, ax=ax, label='Upstream Cells')
+plt.title('Flow Accumulation', size=14)
+plt.xlabel('Longitude')
+plt.ylabel('Latitude')
+plt.tight_layout()
+
+
