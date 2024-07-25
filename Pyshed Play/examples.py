@@ -2,79 +2,26 @@ import pysheds
 from pysheds.grid import Grid
 import matplotlib.pyplot as plt
 from affine import Affine
-
-
-print("Hello world")
-
-# +
-# Read elevation raster
-# ----------------------------
-
-# grid = Grid.from_raster('elevation.tiff')
-# dem = grid.read_raster('elevation.tiff')
-# -
-
-grid = Grid.from_raster('test.tif')
-dem = grid.read_raster('test.tif')
-
-# +
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import colors
 import seaborn as sns
 
-fig, ax = plt.subplots(figsize=(8,6))
-fig.patch.set_alpha(0)
+# Load both the dem (basically a numpy array), and the grid (all the metadata like the extent)
+grid = Grid.from_raster('test.tif')
+dem = grid.read_raster('test.tif')
 
-plt.imshow(dem, extent=grid.extent, cmap='terrain', zorder=1)
-plt.colorbar(label='Elevation (m)')
-plt.grid(zorder=0)
-plt.title('Digital elevation map', size=14)
-plt.xlabel('Longitude')
-plt.ylabel('Latitude')
-plt.tight_layout()
-
-# +
-# Condition DEM
-# ----------------------
-# Fill pits in DEM
+# Hydrologically enforce the DEM so water can flow downhill to the edge and not get stuck
 pit_filled_dem = grid.fill_pits(dem)
-
-# Fill depressions in DEM
 flooded_dem = grid.fill_depressions(pit_filled_dem)
-    
-# Resolve flats in DEM
 inflated_dem = grid.resolve_flats(flooded_dem)
 
-# +
-# Determine D8 flow directions from DEM
-# ----------------------
-# Specify directional mapping
+# Calculate the direction and accumulation of water
 dirmap = (64, 128, 1, 2, 4, 8, 16, 32)
-    
-# Compute flow directions
-# -------------------------------------
 fdir = grid.flowdir(inflated_dem, dirmap=dirmap)
-
-# +
-fig = plt.figure(figsize=(8,6))
-fig.patch.set_alpha(0)
-
-plt.imshow(fdir, extent=grid.extent, cmap='viridis', zorder=2)
-boundaries = ([0] + sorted(list(dirmap)))
-plt.colorbar(boundaries= boundaries,
-             values=sorted(dirmap))
-plt.xlabel('Longitude')
-plt.ylabel('Latitude')
-plt.title('Flow direction grid', size=14)
-plt.grid(zorder=-1)
-plt.tight_layout()
-# -
-
-# Calculate flow accumulation
-# --------------------------
 acc = grid.accumulation(fdir, dirmap=dirmap)
 
+# Visualise the accumulation (so cool!)
 fig, ax = plt.subplots(figsize=(8,6))
 fig.patch.set_alpha(0)
 plt.grid('on', zorder=0)
@@ -88,72 +35,49 @@ plt.xlabel('Longitude')
 plt.ylabel('Latitude')
 plt.tight_layout()
 
-# +
-# Define the affine transformation
-transform = Affine(4.778972520908005, 0.0, 16595726.058522914,
-                   0.0, -4.778972520908005, -4198752.766273966)
-
-# Define the array index (row, column)
-index = (836, 144)
-
-# Convert the array index to coordinates
-x, y = transform * (index[1], index[0])
-
-# -
-
-x, y = grid.affine * (max_coords[1], max_coords[0])
-
-x
-
-y
-
-dem.shape
-
-acc.shape
-
+# Find the coordinate with maximum accumulation
 max_index = np.argmax(acc)
 max_coords = np.unravel_index(max_index, acc.shape)
-max_coords
+x, y = grid.affine * (max_coords[1], max_coords[0])
 
-np.max(acc)
-
-# +
-# # Delineate a catchment
-# # ---------------------
-# # Specify pour point
-# x, y = -97.294, 32.737
-
-# Snap pour point to high accumulation cell
+# # Delineate the largest catchment
 x_snap, y_snap = grid.snap_to_mask(acc > 1000, (x, y))
-
-# # Delineate the catchment
 catch = grid.catchment(x=x_snap, y=y_snap, fdir=fdir, dirmap=dirmap, 
                        xytype='coordinate')
 
+# Find the second largest catchment
+acc2 = acc.copy()
+acc2[catch] = 0
+max_index = np.argmax(acc2)
+max_coords = np.unravel_index(max_index, acc.shape)
+x, y = grid.affine * (max_coords[1], max_coords[0])
+
+catch2 = grid.catchment(x=x, y=y, fdir=fdir, dirmap=dirmap, 
+                       xytype='coordinate')
+
+catch2
+
+plt.imshow(catch)
+
+plt.imshow(catch2)
+
 # +
-# Crop and plot the catchment
-# ---------------------------
-# Clip the bounding box to the catchment
-grid.clip_to(catch)
-clipped_catch = grid.view(catch)
+result = np.zeros(catch.shape, dtype=int)
 
-# Plot the catchment
-fig, ax = plt.subplots(figsize=(8,6))
-fig.patch.set_alpha(0)
-
-plt.grid('on', zorder=0)
-im = ax.imshow(np.where(clipped_catch, clipped_catch, np.nan), extent=grid.extent,
-               zorder=1, cmap='Greys_r')
-plt.xlabel('Longitude')
-plt.ylabel('Latitude')
-plt.title('Delineated Catchment', size=14)
+# Assign values based on conditions
+result[catch & ~catch2] = 1  # True in catch only
+result[~catch & catch2] = 2  # True in catch2 only
+result[catch & catch2] = 3   # True in both catch and catch2
 # -
+
+plt.imshow(result)
 
 # Extract river network
 # ---------------------
-branches = grid.extract_river_network(fdir, acc > 5000, dirmap=dirmap)
+branches = grid.extract_river_network(fdir, acc > 1000, dirmap=dirmap)
 
 # +
+# Visualise the extracted network
 sns.set_palette('husl')
 fig, ax = plt.subplots(figsize=(8.5,6.5))
 
@@ -166,21 +90,42 @@ for branch in branches['features']:
     plt.plot(line[:, 0], line[:, 1])
     
 _ = plt.title('D8 channels', size=14)
+# +
+import numpy as np
+from scipy import ndimage
+import matplotlib.pyplot as plt
+
+# Example array
+arr = np.array([
+    [0, 0, 0, 0, 0],
+    [0, 1, 1, 1, 0],
+    [0, 1, 1, 1, 0],
+    [0, 1, 1, 1, 0],
+    [0, 0, 0, 0, 0]
+])
+
+# Compute the gradient of the array using the Sobel operator
+sobel_x = ndimage.sobel(arr, axis=0)  # horizontal gradient
+sobel_y = ndimage.sobel(arr, axis=1)  # vertical gradient
+edges = np.hypot(sobel_x, sobel_y)    # magnitude of the gradient
+
+# Binarize the edges
+edges = edges > 0
+
+# Plot the original array and the edges
+plt.figure(figsize=(10, 5))
+
+plt.subplot(1, 2, 1)
+plt.title("Original Array")
+plt.imshow(arr, cmap='gray', interpolation='nearest')
+
+plt.subplot(1, 2, 2)
+plt.title("Edges")
+plt.imshow(edges, cmap='gray', interpolation='nearest')
+
+plt.show()
+
 # -
 
-# Calculate distance to outlet from each cell
-# -------------------------------------------
-dist = grid.distance_to_outlet(x=x_snap, y=y_snap, fdir=fdir, dirmap=dirmap,
-                               xytype='coordinate')
-
-fig, ax = plt.subplots(figsize=(8,6))
-fig.patch.set_alpha(0)
-plt.grid('on', zorder=0)
-im = ax.imshow(dist, extent=grid.extent, zorder=2,
-               cmap='cubehelix_r')
-plt.colorbar(im, ax=ax, label='Distance to outlet (cells)')
-plt.xlabel('Longitude')
-plt.ylabel('Latitude')
-plt.title('Flow Distance', size=14)
 
 
