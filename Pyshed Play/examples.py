@@ -6,6 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import colors
 import seaborn as sns
+from datetime import datetime
 
 # Load both the dem (basically a numpy array), and the grid (all the metadata like the extent)
 grid = Grid.from_raster('test.tif')
@@ -41,6 +42,22 @@ max_acc = np.max(acc)
 max_index = np.argmax(acc)
 max_coords = np.unravel_index(max_index, acc.shape)
 x, y = grid.affine * (max_coords[1], max_coords[0])
+
+max_coords
+
+grid.affine
+
+~grid.affine
+
+# +
+# Convert geographic coordinates back to array indices
+col, row = ~grid.affine * (x, y)
+
+# Convert to integer indices
+row, col = int(round(row)), int(round(col))
+# -
+
+row, col
 
 # # Delineate the largest catchment
 x_snap, y_snap = grid.snap_to_mask(acc > 1000, (x, y))
@@ -129,35 +146,53 @@ for branch in branches['features']:
     line = np.asarray(branch['geometry']['coordinates'])
     plt.plot(line[:, 0], line[:, 1])
 
-plt.scatter(16597867.038212, -4201352.527325, color='green', zorder=5)
-plt.scatter(16599243.382298, -4201304.7376, color='red', zorder=5)
+plt.scatter(x1, y1, color='green', zorder=5)
+plt.scatter(x2, y2, color='red', zorder=5)
 
 
 _ = plt.title('D8 channels', size=14)
 # -
 
+print(branches["features"][i]["geometry"]["coordinates"][0])
+print(branches["features"][i]["geometry"]["coordinates"][-1])
+
 network1 = -1
 max_len = -1
 max_len_index = -1
+branches_np = []
 for i, feature in enumerate(branches["features"]):
     line_coords = feature['geometry']['coordinates']
-    if len(line_coords) > max_len:
-        max_len = len(line_coords)
-        max_len_index = i
+    branch_np = []
+    for coord in line_coords:
+        col, row = ~grid.affine * (coord[0], coord[1])
+        row, col = int(round(row)), int(round(col))
+        branch_np.append([row,col])
+    branches_np.append(branch_np)
+len(branches_np)
 
-max_len_index
+coord1 = branches_np[0][0]
+coord2 = branches_np[0][-1]
 
-max_len
+x1, y1 = grid.affine * (coord1[1], coord1[0])
+x2, y2 = grid.affine * (coord2[1], coord2[0])
 
-branches["features"][105]["geometry"]["coordinates"][0]
+# +
+sns.set_palette('husl')
+fig, ax = plt.subplots(figsize=(8.5,6.5))
 
-branches["features"][105]["geometry"]["coordinates"][-1]
+for branch in branches_np:
+    line = np.asarray(branch)
+    plt.plot(line[:, 0], line[:, 1])
 
-feature = branches[0]
-line_coords = feature['geometry']['coordinates']
+plt.scatter(coord1[0], coord1[1], color='green', zorder=5)
+plt.scatter(coord2[0], coord2[1], color='red', zorder=5)
 
-[16596256.524473, -4198819.671889] in line_coords
 
-[x, y] in line_coords
+_ = plt.title('D8 channels', size=14)
+# -
+
+len(branches["features"])
+
+acc.shape
 
 
