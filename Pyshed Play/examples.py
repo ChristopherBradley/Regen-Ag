@@ -134,6 +134,7 @@ branches = grid.extract_river_network(fdir, acc > max_acc/100, dirmap=dirmap)
 end = datetime.now()
 print(end - start)
 
+# Convert to numpy coordinates 
 network1 = -1
 max_len = -1
 max_len_index = -1
@@ -220,7 +221,6 @@ while largest_branch != None:
     upper_coord = branches_np[largest_branch][0]
     branch_segment_ids.append(largest_branch)
     largest_branch = find_segment_above(upper_coord, branches_np)
-branch_segment_ids
 
 branch_segments = [branches_np[i] for i in sorted(branch_segment_ids)]
 branch_combined = [item for sublist in branch_segments for item in sublist]
